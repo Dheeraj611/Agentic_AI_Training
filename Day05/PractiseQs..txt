@@ -1,0 +1,125 @@
+output of the below code:
+
+question 1: 
+import asyncio
+
+async def foo():
+    print("A")
+    await asyncio.sleep(0)
+    print("B")
+
+async def main():
+    task = asyncio.create_task(foo())
+    print("C")
+    await task
+    print("D")
+
+asyncio.run(main())
+
+2. 
+import asyncio
+
+async def worker():
+    print("worker start")
+    await asyncio.sleep(1)
+    print("worker end")
+
+async def main():
+    task = asyncio.create_task(worker())
+    print("main running")
+    await task
+
+asyncio.run(main())
+
+3. 
+import asyncio
+
+async def job(delay):
+    await asyncio.sleep(delay)
+
+async def main():
+    await asyncio.gather(
+        job(3),
+        job(2),
+        job(1)
+    )
+
+asyncio.run(main())
+
+4. 
+import asyncio
+
+async def job(delay):
+    await asyncio.sleep(delay)
+
+async def main():
+    await job(3)
+    await job(2)
+    await job(1)
+
+asyncio.run(main())
+
+5.
+import asyncio
+
+async def worker():
+    try:
+        while True:
+            print("working")
+            await asyncio.sleep(1)
+    except asyncio.CancelledError:
+        print("cancelled")
+        raise
+
+async def main():
+    task = asyncio.create_task(worker())
+
+    await asyncio.sleep(2.5)
+
+    task.cancel()
+
+    try:
+        await task
+    except asyncio.CancelledError:
+        print("main noticed")
+
+asyncio.run(main())
+
+5.
+import asyncio
+
+async def task1():
+    await asyncio.sleep(1)
+    raise ValueError("boom")
+
+async def task2():
+    await asyncio.sleep(2)
+    return 42
+
+async def main():
+    await asyncio.gather(
+        task1(),
+        task2()
+    )
+
+asyncio.run(main())
+
+6.
+import asyncio
+
+async def task1():
+    raise ValueError("bad")
+
+async def task2():
+    return 10
+
+async def main():
+    result = await asyncio.gather(
+        task1(),
+        task2(),
+        return_exceptions=True
+    )
+
+    print(result)
+
+asyncio.run(main())
